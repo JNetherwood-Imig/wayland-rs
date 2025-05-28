@@ -4,5 +4,4 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-change-case = "0.2.0"
 scanner_macro = { path = "./scanner_macro" }
