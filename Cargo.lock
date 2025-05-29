@@ -123,6 +123,7 @@ dependencies = [
  "change-case",
  "proc-macro2",
  "quick-xml",
+ "quote",
  "serde",
  "syn",
 ]
@@ -167,6 +168,9 @@ checksum = "5a5f39404a5da50712a4c1eecf25e90dd62b613502b7e925fd4e4d19b5c96512"
 [[package]]
 name = "wayland_client"
 version = "0.1.0"
+dependencies = [
+ "wayland_scanner",
+]
 
 [[package]]
 name = "wayland_scanner"
