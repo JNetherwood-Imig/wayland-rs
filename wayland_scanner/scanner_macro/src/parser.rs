@@ -22,7 +22,11 @@ pub struct Protocol {
 impl From<RawProtocol> for Protocol {
     fn from(value: RawProtocol) -> Self {
         Self {
-            name: value.name,
+            name: if value.name == "wayland" {
+                "wl".to_string()
+            } else {
+                value.name
+            },
             copyright: value.copyright.map(Copyright::from),
             description: value.description.map(Description::from),
             interfaces: value.interfaces.into_iter().map(Interface::from).collect(),
@@ -94,7 +98,6 @@ impl From<Option<String>> for RequestType {
 
 pub struct Request {
     pub name: String,
-    pub valid_name: String,
     pub r#type: RequestType,
     pub since: u32,
     pub deprecated_since: Option<u32>,
@@ -104,13 +107,8 @@ pub struct Request {
 
 impl From<RawRequest> for Request {
     fn from(value: RawRequest) -> Self {
-        let mut valid_name = value.name.clone();
-        if syn::parse_str::<Ident>(&valid_name).is_err() {
-            valid_name.insert_str(0, "r#");
-        }
         Self {
             name: value.name,
-            valid_name,
             r#type: value.r#type.into(),
             since: value.since.map_or(1, |s| s.parse().unwrap()),
             deprecated_since: value.deprecated_since.map(|s| s.parse().unwrap()),

@@ -12,27 +12,26 @@ impl GenClientTokens for parser::Protocol {
         let name = Ident::new(&self.name, Span::call_site());
         let interfaces = self
             .interfaces
-            .into_iter()
-            .map(parser::Interface::to_tokens)
+            .iter()
+            .map(|i| i.to_tokens())
             .collect::<Vec<TokenStream>>();
 
         quote! {
-            mod #name {
+            pub mod #name {
                 #( #interfaces )*
             }
-            pub use #name::*;
         }
     }
 }
 
-impl GenClientTokens for parser::Interface {
+impl GenClientTokens for &parser::Interface {
     fn to_tokens(self) -> TokenStream {
         let name = Ident::new(&self.name, Span::call_site());
         let type_name = Ident::new(&self.type_name, Span::call_site());
         let requests = self
             .requests
-            .into_iter()
-            .map(parser::Request::to_tokens)
+            .iter()
+            .map(|r| r.to_tokens())
             .collect::<Vec<TokenStream>>();
 
         quote! {
@@ -48,13 +47,13 @@ impl GenClientTokens for parser::Interface {
     }
 }
 
-impl GenClientTokens for parser::Request {
+impl GenClientTokens for &parser::Request {
     fn to_tokens(self) -> TokenStream {
-        let name = Ident::new(&self.name, Span::call_site());
+        let name = Ident::new_raw(&self.name, Span::call_site());
         let args = self
             .args
-            .into_iter()
-            .map(parser::Arg::to_tokens)
+            .iter()
+            .map(|a| a.to_tokens())
             .collect::<Vec<TokenStream>>();
 
         quote! {
@@ -63,39 +62,39 @@ impl GenClientTokens for parser::Request {
     }
 }
 
-impl GenClientTokens for parser::Event {
+impl GenClientTokens for &parser::Event {
     fn to_tokens(self) -> TokenStream {
         let name = Ident::new(&self.type_name, Span::call_site());
         let args = self
             .args
-            .into_iter()
-            .map(parser::Arg::to_tokens)
+            .iter()
+            .map(|a| a.to_tokens())
             .collect::<Vec<TokenStream>>();
 
         quote! {
-            pub struct #name {
-                #(#args)*
+            #name{
+                #(#args),*
             }
         }
     }
 }
 
-impl GenClientTokens for parser::Enum {
+impl GenClientTokens for &parser::Enum {
     fn to_tokens(self) -> TokenStream {
         todo!()
     }
 }
 
-impl GenClientTokens for parser::Entry {
+impl GenClientTokens for &parser::Entry {
     fn to_tokens(self) -> TokenStream {
         todo!()
     }
 }
 
-impl GenClientTokens for parser::Arg {
+impl GenClientTokens for &parser::Arg {
     fn to_tokens(self) -> TokenStream {
-        let name = Ident::new(&self.name, Span::call_site());
+        let name = Ident::new_raw(&self.name, Span::call_site());
         let type_name = Ident::new("u32", Span::call_site());
-        quote! { #name: #type_name, }
+        quote! { #name: #type_name }
     }
 }
