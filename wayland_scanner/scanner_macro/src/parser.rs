@@ -4,6 +4,7 @@ use std::path::Path;
 
 use change_case::pascal_case;
 use serde::Deserialize;
+use syn::Ident;
 
 pub fn parse_protocol(path: &Path) -> Protocol {
     let file = File::open(path).unwrap();
@@ -49,7 +50,11 @@ pub struct Interface {
 
 impl From<RawInterface> for Interface {
     fn from(value: RawInterface) -> Self {
-        let name = value.name.strip_prefix("wl_").unwrap().to_string();
+        let name = value
+            .name
+            .strip_prefix("wl_")
+            .unwrap_or(&value.name)
+            .to_string();
         let type_name = pascal_case(&name);
         let mut requests = Vec::<Request>::new();
         let mut events = Vec::<Event>::new();
@@ -89,6 +94,7 @@ impl From<Option<String>> for RequestType {
 
 pub struct Request {
     pub name: String,
+    pub valid_name: String,
     pub r#type: RequestType,
     pub since: u32,
     pub deprecated_since: Option<u32>,
@@ -98,8 +104,13 @@ pub struct Request {
 
 impl From<RawRequest> for Request {
     fn from(value: RawRequest) -> Self {
+        let mut valid_name = value.name.clone();
+        if syn::parse_str::<Ident>(&valid_name).is_err() {
+            valid_name.insert_str(0, "r#");
+        }
         Self {
             name: value.name,
+            valid_name,
             r#type: value.r#type.into(),
             since: value.since.map_or(1, |s| s.parse().unwrap()),
             deprecated_since: value.deprecated_since.map(|s| s.parse().unwrap()),
@@ -125,6 +136,7 @@ impl From<Option<String>> for EventType {
 
 pub struct Event {
     pub name: String,
+    pub type_name: String,
     pub r#type: EventType,
     pub since: u32,
     pub deprecated_since: Option<u32>,
@@ -134,8 +146,11 @@ pub struct Event {
 
 impl From<RawEvent> for Event {
     fn from(value: RawEvent) -> Self {
+        let name = value.name;
+        let type_name = pascal_case(&name);
         Self {
-            name: value.name,
+            name,
+            type_name,
             r#type: value.r#type.into(),
             since: value.since.map_or(1, |s| s.parse().unwrap()),
             deprecated_since: value.deprecated_since.map(|s| s.parse().unwrap()),
@@ -178,18 +193,17 @@ pub struct Entry {
 
 impl From<RawEntry> for Entry {
     fn from(value: RawEntry) -> Self {
-        let is_valid_ident = syn::parse_str::<syn::Ident>(value.name.as_str()).is_ok();
-        println!("{} is valid identifier: {}", value.name, is_valid_ident);
-        let valid_name = change_case::pascal_case(&value.name);
-        println!("value is {}", value.value);
+        let mut valid_name = pascal_case(&value.name);
+        if syn::parse_str::<Ident>(&value.name).is_err() {
+            valid_name.insert(0, '_');
+        }
 
         Self {
             name: value.name,
             valid_name,
-            value: if value.value.starts_with("0x") {
-                u32::from_str_radix(value.value.as_str().strip_prefix("0x").unwrap(), 16).unwrap()
-            } else {
-                u32::from_str_radix(value.value.as_str(), 10).unwrap()
+            value: match value.value.strip_prefix("0x") {
+                Some(hex) => u32::from_str_radix(hex, 16).unwrap(),
+                _ => u32::from_str_radix(&value.value, 10).unwrap(),
             },
             summary: value.summary,
             since: value.since.map_or(1, |s| s.parse().unwrap()),

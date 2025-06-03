@@ -8,7 +8,6 @@ use quote::quote;
 
 pub(crate) mod client;
 pub(crate) mod parser;
-mod path;
 pub(crate) mod server;
 
 #[proc_macro]
@@ -23,8 +22,6 @@ pub fn generate_client_protocols(_input: TokenStream) -> TokenStream {
     let output = quote! {
         #( #generated )*
     };
-
-    println!("{}", output);
 
     output.into()
 }
@@ -74,7 +71,10 @@ fn get_paths() -> Vec<PathBuf> {
         }
     }
     match fs::exists("/usr/share") {
-        Ok(true) => vec![PathBuf::from("/usr/share")],
+        Ok(true) => vec![
+            PathBuf::from("/usr/share/wayland"),
+            PathBuf::from("/usr/share/wayland-protocols"),
+        ],
         _ => Vec::new(),
     }
 }

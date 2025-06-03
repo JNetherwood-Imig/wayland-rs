@@ -1,6 +1,3 @@
-use core::panic;
-use std::ops::Deref;
-
 use crate::parser;
 use proc_macro2::{Span, TokenStream};
 use quote::quote;
@@ -66,12 +63,39 @@ impl GenClientTokens for parser::Request {
     }
 }
 
+impl GenClientTokens for parser::Event {
+    fn to_tokens(self) -> TokenStream {
+        let name = Ident::new(&self.type_name, Span::call_site());
+        let args = self
+            .args
+            .into_iter()
+            .map(parser::Arg::to_tokens)
+            .collect::<Vec<TokenStream>>();
+
+        quote! {
+            pub struct #name {
+                #(#args)*
+            }
+        }
+    }
+}
+
+impl GenClientTokens for parser::Enum {
+    fn to_tokens(self) -> TokenStream {
+        todo!()
+    }
+}
+
+impl GenClientTokens for parser::Entry {
+    fn to_tokens(self) -> TokenStream {
+        todo!()
+    }
+}
+
 impl GenClientTokens for parser::Arg {
     fn to_tokens(self) -> TokenStream {
         let name = Ident::new(&self.name, Span::call_site());
         let type_name = Ident::new("u32", Span::call_site());
-        quote! {
-            #name: #type_name
-        }
+        quote! { #name: #type_name, }
     }
 }
