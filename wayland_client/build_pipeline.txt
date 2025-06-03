@@ -1,0 +1,16 @@
+IDEAS
+The scanner will not be used directly by the application.
+Instead, the scanner will be called by wayland_client and wayland_server.
+This will generate most of their wl modules.
+The path used will be detected at compile time,
+first checking WAYLAND_PROTOCOLS_PATH,
+then trying $XDG_DATA_HOME, then each path in $XDG_DATA_DIRS,
+before finally assuming /usr/share, then failing.
+There will be a list of "deprecated protocols" which will be ignored by the scanner.
+These will never have code generated.
+All protocols will exist in the wl module, and core protocols will have their wl prefix stripped.
+This will mean that it will be
+wl::XdgToplevel, rather than wl::xdg_shell::XdgToplevel
+wl::Display, rather than wl::WlDisplay
+wl::XdgToplevel::close(&self)
+wl::Display::get_registry(&self)

@@ -1,3 +1,6 @@
+use core::panic;
+use std::ops::Deref;
+
 use crate::parser;
 use proc_macro2::{Span, TokenStream};
 use quote::quote;

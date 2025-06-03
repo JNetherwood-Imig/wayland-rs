@@ -1,18 +1,18 @@
 #[macro_export]
 macro_rules! generate_client_mod {
-    ($path: literal) => {
-        scanner_macro::generate_client_protocols!($path);
+    () => {
+        scanner_macro::generate_client_protocols!();
     };
 }
 
 mod _test_mod {
-    scanner_macro::generate_client_protocols!("/usr/share/wayland/");
+    scanner_macro::generate_client_protocols!();
 }
 
 #[cfg(test)]
 mod tests {
     mod wl {
-        crate::generate_client_mod!("/usr/share/wayland/");
+        crate::generate_client_mod!();
     }
     #[test]
     fn does_it_work() {}
