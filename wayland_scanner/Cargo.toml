@@ -1,7 +1,0 @@
-[package]
-name = "wayland_scanner"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-scanner_macro = { path = "./scanner_macro" }

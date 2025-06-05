@@ -1,0 +1,9 @@
+[package]
+name = "wayland-client"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+client-core = { path = "./client-core" }
+client-protocol-macro = { path = "./client-protocol-macro" }
+wayland-scanner = { path = "../wayland-scanner" }

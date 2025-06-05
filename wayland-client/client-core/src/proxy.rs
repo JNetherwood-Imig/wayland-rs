@@ -15,20 +15,4 @@ impl<I: Interface, const V: u32> Proxy<I, V> {
             _interface: std::marker::PhantomData,
         }
     }
-
-    pub(crate) fn equals(&self, other: &Self) -> bool {
-        self.id == other.id
-    }
-
-    pub(crate) const fn interface() -> &'static str {
-        I::INTERFACE
-    }
-
-    pub(crate) const fn max_version() -> u32 {
-        I::MAX_VERSION
-    }
-
-    pub(crate) const fn version() -> u32 {
-        V
-    }
 }

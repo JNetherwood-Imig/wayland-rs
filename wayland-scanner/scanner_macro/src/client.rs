@@ -1,6 +1,6 @@
 use crate::parser;
 use proc_macro2::{Span, TokenStream};
-use quote::quote;
+use quote::{IdentFragment, quote};
 use syn::Ident;
 
 pub trait GenClientTokens {
@@ -33,16 +33,29 @@ impl GenClientTokens for &parser::Interface {
             .iter()
             .map(|r| r.to_tokens())
             .collect::<Vec<TokenStream>>();
+        let events = self
+            .events
+            .iter()
+            .map(|e| e.to_tokens())
+            .collect::<Vec<TokenStream>>();
+        let enums = self
+            .enums
+            .iter()
+            .map(|e| e.to_tokens())
+            .collect::<Vec<TokenStream>>();
 
         quote! {
-            mod #name {
+            pub mod #name {
                 pub struct #type_name {}
 
                 impl #type_name {
                     #( #requests )*
                 }
+
+                #( #events )*
+
+                #( #enums )*
             }
-            pub use #name::*;
         }
     }
 }
@@ -64,7 +77,9 @@ impl GenClientTokens for &parser::Request {
 
 impl GenClientTokens for &parser::Event {
     fn to_tokens(self) -> TokenStream {
-        let name = Ident::new(&self.type_name, Span::call_site());
+        let mut type_name = self.type_name.clone();
+        type_name.push_str("Event");
+        let name = Ident::new(&type_name, Span::call_site());
         let args = self
             .args
             .iter()
@@ -72,8 +87,8 @@ impl GenClientTokens for &parser::Event {
             .collect::<Vec<TokenStream>>();
 
         quote! {
-            #name{
-                #(#args),*
+            pub struct #name {
+                #( #args ),*
             }
         }
     }
@@ -81,13 +96,27 @@ impl GenClientTokens for &parser::Event {
 
 impl GenClientTokens for &parser::Enum {
     fn to_tokens(self) -> TokenStream {
-        todo!()
+        let name = Ident::new(&self.type_name, Span::call_site());
+        let entries = self
+            .entries
+            .iter()
+            .map(|e| e.to_tokens())
+            .collect::<Vec<TokenStream>>();
+
+        quote! {
+            #[repr(u32)]
+            pub enum #name {
+                #( #entries ),*
+            }
+        }
     }
 }
 
 impl GenClientTokens for &parser::Entry {
     fn to_tokens(self) -> TokenStream {
-        todo!()
+        let name = Ident::new(&self.valid_name, Span::call_site());
+        let value = syn::LitInt::new(self.value.to_string().as_str(), Span::call_site());
+        quote! {#name = #value}
     }
 }
 
