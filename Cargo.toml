@@ -1,9 +1,11 @@
 [workspace]
 resolver = "3"
 members = [
-  "wayland-scanner",
-  "wayland-client",
-  "wayland-client/client-core",
-  "wayland-client/client-protocol-macro",
-  "wayland-server"
+  "packages/wayland-client",
+  "packages/wayland-client-core",
+  "packages/wayland-client-protocol",
+  "packages/wayland-server",
+  "packages/wayland-server-core",
+  "packages/wayland-server-protocol",
+  "packages/wayland-scanner",
 ]

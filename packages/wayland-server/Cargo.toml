@@ -1,0 +1,8 @@
+[package]
+name = "wayland-server"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+wayland-server-core = { path = "../wayland-server-core" }
+wayland-server-protocol = { path = "../wayland-server-protocol" }
