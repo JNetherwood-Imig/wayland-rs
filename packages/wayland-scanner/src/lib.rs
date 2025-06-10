@@ -20,28 +20,33 @@ pub struct Protocol {
 }
 
 impl Protocol {
-    pub fn name(&self) -> &str {
+    pub fn get_name(&self) -> &str {
         &self.name
     }
 
-    pub fn copyright(&self) -> Option<&Copyright> {
+    pub fn get_copyright(&self) -> Option<&Copyright> {
         self.copyright.as_ref()
     }
 
-    pub fn description(&self) -> Option<&Description> {
+    pub fn get_description(&self) -> Option<&Description> {
         self.description.as_ref()
     }
 
-    pub fn interfaces(&self) -> &[Interface] {
+    pub fn get_interfaces(&self) -> &[Interface] {
         &self.interfaces
     }
 }
 
 pub struct Copyright(String);
 
+impl Copyright {
+    pub fn get_content(&self) -> &str {
+        &self.0
+    }
+}
+
 pub struct Interface {
     name: String,
-    type_name: String,
     max_version: u32,
     description: Option<Description>,
     requests: Vec<Request>,
@@ -50,57 +55,209 @@ pub struct Interface {
 }
 
 impl Interface {
-    pub fn name(&self) -> &str {}
+    pub fn get_name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn get_max_version(&self) -> u32 {
+        self.max_version
+    }
+
+    pub fn get_description(&self) -> Option<&Description> {
+        self.description.as_ref()
+    }
+
+    pub fn get_requests(&self) -> &[Request] {
+        &self.requests
+    }
+
+    pub fn get_events(&self) -> &[Event] {
+        &self.events
+    }
+
+    pub fn get_enums(&self) -> &[Enum] {
+        &self.enums
+    }
 }
 
 pub struct Request {
-    pub name: String,
-    pub r#type: RequestType,
-    pub since: u32,
-    pub deprecated_since: Option<u32>,
-    pub description: Option<Description>,
-    pub args: Vec<Arg>,
+    name: String,
+    r#type: RequestType,
+    since: u32,
+    deprecated_since: Option<u32>,
+    description: Option<Description>,
+    args: Vec<Arg>,
+}
+
+impl Request {
+    pub fn get_name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn get_type(&self) -> &RequestType {
+        &self.r#type
+    }
+
+    pub fn get_since(&self) -> u32 {
+        self.since
+    }
+
+    pub fn get_deprecated_since(&self) -> Option<u32> {
+        self.deprecated_since
+    }
+
+    pub fn get_description(&self) -> Option<&Description> {
+        self.description.as_ref()
+    }
+
+    pub fn get_args(&self) -> &[Arg] {
+        &self.args
+    }
 }
 
 pub struct Event {
-    pub name: String,
-    pub type_name: String,
-    pub r#type: EventType,
-    pub since: u32,
-    pub deprecated_since: Option<u32>,
-    pub description: Option<Description>,
-    pub args: Vec<Arg>,
+    name: String,
+    r#type: EventType,
+    since: u32,
+    deprecated_since: Option<u32>,
+    description: Option<Description>,
+    args: Vec<Arg>,
+}
+
+impl Event {
+    pub fn get_name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn get_type(&self) -> &EventType {
+        &self.r#type
+    }
+
+    pub fn get_since(&self) -> u32 {
+        self.since
+    }
+
+    pub fn get_deprecated_since(&self) -> Option<u32> {
+        self.deprecated_since
+    }
+
+    pub fn get_description(&self) -> Option<&Description> {
+        self.description.as_ref()
+    }
+
+    pub fn get_args(&self) -> &[Arg] {
+        &self.args
+    }
 }
 
 pub struct Enum {
-    pub name: String,
-    pub type_name: String,
-    pub since: u32,
-    pub description: Option<Description>,
-    pub entries: Vec<Entry>,
+    name: String,
+    since: u32,
+    is_bitfield: bool,
+    description: Option<Description>,
+    entries: Vec<Entry>,
+}
+
+impl Enum {
+    pub fn get_name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn get_since(&self) -> u32 {
+        self.since
+    }
+
+    pub fn get_is_bitfield(&self) -> bool {
+        self.is_bitfield
+    }
+
+    pub fn get_description(&self) -> Option<&Description> {
+        self.description.as_ref()
+    }
+
+    pub fn get_entries(&self) -> &[Entry] {
+        &self.entries
+    }
 }
 
 pub struct Entry {
-    pub name: String,
-    pub valid_name: String,
-    pub value: u32,
-    pub summary: Option<String>,
-    pub since: u32,
-    pub deprecated_since: Option<u32>,
-    pub description: Option<Description>,
+    name: String,
+    value: u32,
+    summary: Option<String>,
+    since: u32,
+    deprecated_since: Option<u32>,
+    description: Option<Description>,
+}
+
+impl Entry {
+    pub fn get_name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn get_value(&self) -> u32 {
+        self.value
+    }
+
+    pub fn get_summary(&self) -> Option<&str> {
+        self.summary.as_ref().map(String::as_str)
+    }
+
+    pub fn get_since(&self) -> u32 {
+        self.since
+    }
+
+    pub fn get_deprecated_since(&self) -> Option<u32> {
+        self.deprecated_since
+    }
+
+    pub fn get_description(&self) -> Option<&Description> {
+        self.description.as_ref()
+    }
 }
 
 pub struct Arg {
-    pub name: String,
-    pub r#type: ArgType,
-    pub summary: Option<String>,
-    pub nullable: bool,
-    pub description: Option<Description>,
+    name: String,
+    r#type: ArgType,
+    summary: Option<String>,
+    nullable: bool,
+    description: Option<Description>,
+}
+
+impl Arg {
+    pub fn get_name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn get_type(&self) -> &ArgType {
+        &self.r#type
+    }
+
+    pub fn get_summary(&self) -> Option<&str> {
+        self.summary.as_ref().map(String::as_str)
+    }
+
+    pub fn get_nullable(&self) -> bool {
+        self.nullable
+    }
+
+    pub fn get_description(&self) -> Option<&Description> {
+        self.description.as_ref()
+    }
 }
 
 pub struct Description {
-    pub summary: String,
-    pub content: Option<String>,
+    summary: String,
+    content: Option<String>,
+}
+
+impl Description {
+    pub fn get_summary(&self) -> &str {
+        &self.summary
+    }
+
+    pub fn get_content(&self) -> Option<&str> {
+        self.content.as_ref().map(String::as_str)
+    }
 }
 
 #[derive(Deserialize)]
@@ -241,12 +398,6 @@ impl From<RawCopyright> for Copyright {
 
 impl From<RawInterface> for Interface {
     fn from(value: RawInterface) -> Self {
-        let name = value
-            .name
-            .strip_prefix("wl_")
-            .unwrap_or(&value.name)
-            .to_string();
-        let type_name = pascal_case(&name);
         let mut requests = Vec::<Request>::new();
         let mut events = Vec::<Event>::new();
         let mut enums = Vec::<Enum>::new();
@@ -258,8 +409,7 @@ impl From<RawInterface> for Interface {
             };
         }
         Self {
-            name,
-            type_name,
+            name: pascal_case(value.name.strip_prefix("wl_").unwrap_or(&value.name)),
             max_version: value.version.parse().unwrap(),
             description: value.description.map(Description::from),
             requests,
@@ -312,11 +462,8 @@ impl From<Option<String>> for EventType {
 
 impl From<RawEvent> for Event {
     fn from(value: RawEvent) -> Self {
-        let name = value.name;
-        let type_name = pascal_case(&name);
         Self {
-            name,
-            type_name,
+            name: pascal_case(value.name.as_str()),
             r#type: value.r#type.into(),
             since: value.since.map_or(1, |s| s.parse().unwrap()),
             deprecated_since: value.deprecated_since.map(|s| s.parse().unwrap()),
@@ -328,11 +475,10 @@ impl From<RawEvent> for Event {
 
 impl From<RawEnum> for Enum {
     fn from(value: RawEnum) -> Self {
-        let type_name = pascal_case(&value.name);
         Self {
-            name: value.name,
-            type_name,
+            name: pascal_case(value.name.as_str()),
             since: value.since.map_or(1, |s| s.parse().unwrap()),
+            is_bitfield: value.bitfield.map_or(false, |s| s == "true"),
             description: value.description.map(Description::from),
             entries: value.entries.into_iter().map(Entry::from).collect(),
         }
@@ -341,14 +487,13 @@ impl From<RawEnum> for Enum {
 
 impl From<RawEntry> for Entry {
     fn from(value: RawEntry) -> Self {
-        let mut valid_name = pascal_case(&value.name);
+        let mut name = pascal_case(&value.name);
         if syn::parse_str::<syn::Ident>(&value.name).is_err() {
-            valid_name.insert(0, '_');
+            name.insert(0, '_');
         }
 
         Self {
-            name: value.name,
-            valid_name,
+            name,
             value: match value.value.strip_prefix("0x") {
                 Some(hex) => u32::from_str_radix(hex, 16).unwrap(),
                 _ => u32::from_str_radix(&value.value, 10).unwrap(),
